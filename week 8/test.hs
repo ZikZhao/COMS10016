@@ -59,7 +59,7 @@ applyUntilStable f x = if x == f x then x else applyUntilStable f (f x)
 
 
 caesarShift :: (Int -> Int) -> String -> String
-caesarShift func string = [chr (func (ord char)) | char <- string]
+caesarShift func string = [chr ((mod ((func (ord char) - ord 'A')) 26) + ord 'A') | char <- string]
 
 vigenereShift :: String -> String -> String
 vigenereShift (_:plain) [] = error "code is not sufficient"
