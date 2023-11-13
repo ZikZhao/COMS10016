@@ -62,8 +62,9 @@ caesarShift :: (Int -> Int) -> String -> String
 caesarShift func string = [chr ((mod ((func (ord char) - ord 'A')) 26) + ord 'A') | char <- string]
 
 vigenereShift :: String -> String -> String
-vigenereShift (_:plain) [] = error "code is not sufficient"
-vigenereShift [] _ = []
-vigenereShift (char:plain) (x:code)
-    | (isUpper char || char == ' ') && isUpper x = chr (mod (ord char + ord x - 2 * ord 'A') 26 + ord 'A') : vigenereShift plain code
-    | otherwise = error "input must be uppercase"
+vigenereShift "" _ = ""
+vigenereShift string code = [
+    (if isLower (string !! index)
+        then chr (mod ((ord (string !! index)) + ord (toLower (code !! (mod index (length code)))) - 2 * ord 'a') 26 + ord 'a')
+        else chr (mod ((ord (string !! index)) + ord (toUpper (code !! (mod index (length code)))) - 2 * ord 'A') 26 + ord 'A')
+    ) | index <- [0..(length string - 1)] ]
