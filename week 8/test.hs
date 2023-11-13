@@ -49,10 +49,7 @@ filter' f xs = [x | x <- xs, f x]
 
 
 zip' :: [a] -> [b] -> [(a, b)]
-zip' [] [] = []
-zip' [] _ = error "lengths of two arrays are not equal"
-zip' _ [] = error "lengths of two arrays are not equal"
-zip' (a:as) (b:bs) = (a, b) : zip' as bs
+zip' = zipWith (\a b -> (a, b))
 
 compareSnd :: (Ord a, Ord b) => [(a, b)] -> [(a, b)]
 compareSnd = sortBy (\(x1, y1) (x2, y2) -> compare y1 y2)
