@@ -3,14 +3,14 @@
 #define RATIO 10
 
 typedef struct pos {
-    unsigned short x;
-    unsigned short y;
+    short x;
+    short y;
 } pos;
 
 pos head = { 50, 50 };
 pos* body = 0;
 unsigned short length = 2;
-time_t last_move;
+clock_t last_move;
 pos direction = { 0, 1 };
 pos apples[5];
 
@@ -53,10 +53,18 @@ bool draw(display* window, void* data, const char key) {
         direction.y = 0;
         break;
     }
-    time_t current_time = time(0);
+    clock_t current_time = clock();
     if (current_time != last_move) {
         last_move = current_time;
         pos new_head = { head.x + direction.x, head.y + direction.y };
+        if (new_head.x < 0) {
+            new_head.x += 100;
+        }
+        new_head.x %= 100;
+        if (new_head.y < 0) {
+            new_head.y += 100;
+        }
+        new_head.y %= 100;
         for (unsigned short apple_index = 0; apple_index != 5; apple_index++) {
             if (apples[apple_index].x == new_head.x && apples[apple_index].y == new_head.y) {
                 length++;
@@ -81,7 +89,7 @@ int main(int argc, char* args[]) {
     body[0].x = body[1].x = 50;
     body[0].y = 49;
     body[1].y = 48;
-    last_move = time(0);
+    last_move = clock();
     for (unsigned short apple_index = 0; apple_index != 5; apple_index++) {
         apples[apple_index] = random_apple();
     }
