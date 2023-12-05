@@ -42,3 +42,5 @@ safeDiv x y = Right' (div x y)
 
 safeDiv2 :: Int -> Int -> Int -> Either' String Int
 safeDiv2 x y z = safeDiv x y >>= (\result -> safeDiv result z)
+
+safeDivAll :: Int -> [Int] -> Either' String Int
