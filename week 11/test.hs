@@ -44,3 +44,36 @@ safeDiv2 :: Int -> Int -> Int -> Either' String Int
 safeDiv2 x y z = safeDiv x y >>= (\result -> safeDiv result z)
 
 safeDivAll :: Int -> [Int] -> Either' String Int
+safeDivAll x [] = Right' x
+safeDivAll x (y:ys) = safeDiv x y >>= (\z -> safeDivAll z ys)
+
+data Tree a = Leaf a | Branch (Tree a) (Tree a)
+    deriving (Eq, Show)
+
+newtype Reader a b = MkReader (a -> b)
+
+instance Functor Tree where
+    fmap f (Leaf a) = Leaf (f a)
+    fmap f (Branch tree1 tree2) = Branch (fmap f tree1) (fmap f tree2)
+
+instance Applicative Tree where
+    pure = Leaf
+    (Leaf f) <*> (Leaf a) = Leaf (f a)
+    --(Leaf f) <*> (Branch tree1 tree2) = Branch ((Leaf f) <*> tree1) ((Leaf f) <*> tree2)
+    (Leaf f) <*> (Branch tree1 tree2) = error ""
+    (Branch tree1 tree2) <*> (Leaf a) = error ""
+    (Branch tree1 tree2) <*> (Branch tree3 tree4) = Branch (tree1 <*> tree3) (tree2 <*> tree4)
+
+instance Functor (Reader type1) where
+    fmap :: (a -> b) -> Reader type1 a -> Reader type1 b
+    fmap f (MkReader f2) = MkReader (f . f2)
+
+instance Applicative (Reader type1) where
+    pure f = MkReader (\x -> f)
+    (MkReader f1) <*> (MkReader f2) = MkReader (\x -> (f1 x) (f2 x))
+
+doTwice :: Applicative f => f a -> f (a, a)
+doTwice = fmap (\x -> (x, x))
+
+sequenceAp :: Applicative f => [f a] -> f [a]
+sequenceAp xs = foldr (<*>) (pure []) ([pure (:) <*> x | x <- xs])
